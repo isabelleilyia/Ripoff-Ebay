@@ -1,0 +1,24 @@
+{% extends "auctions/layout.html" %}
+
+{% block style %}
+<style>
+    .form {
+        font-weight:bold;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+{% load widget_tweaks %}
+<form action = {% url 'create' %} method="POST">  
+    {% csrf_token %}
+    {% for field in form %}
+    <div class="form form-group"> 
+        {{ field.label_tag }} <br> 
+        {% render_field field class="form-control" %}  <br> 
+    </div>
+    {% endfor %}
+    <button type="submit" class="btn btn-primary">Add Listing</button>
+</form>
+
+{% endblock %}

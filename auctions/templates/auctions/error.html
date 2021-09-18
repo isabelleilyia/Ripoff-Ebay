@@ -1,0 +1,9 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+<div class="alert alert-danger" role="alert">
+    Bid must be higher than starting price and/or current highest bid!
+</div>
+
+<a href="{% url 'details' listing %}">Go back</a>
+{% endblock %}

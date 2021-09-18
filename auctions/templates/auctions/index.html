@@ -1,0 +1,31 @@
+{% extends "auctions/layout.html" %}
+{% block style %}
+<style>
+    footer {
+        font-size: small;
+        color:grey;
+        margin: 5px;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+    <h2>Active Listings</h2>
+    {% for listing in listings %}
+    <div class="card" style="width: 18rem; float:left; margin:20px;">
+        {% if listing.image %}
+        <img src="{{ listing.image }}" class="card-img-top" alt="Item image.">
+        {% else %}
+        <img src="static/auctions/logo.jpg" class="card-img-top" alt="Auction logo.">
+        {% endif %}
+        <div class="card-body">
+          <h5 class="card-title">{{ listing.item_name }}</h5>
+          <p class="card-text">{{ listing.description }}</p>
+          <h6>Price: ${{ listing.current_price }}</h4>
+          <a href="{% url 'details' listing.id%}" class="btn btn-primary">Listing details</a>
+          <footer>Created {{ listing.date }}</footer>
+        </div>
+      </div>
+
+    {% endfor %}
+{% endblock %}

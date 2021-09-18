@@ -1,0 +1,95 @@
+{% extends "auctions/layout.html" %}
+
+{% block style %}
+<style>
+    #comment_section {
+        padding:15px;
+        margin-top: 20px;
+    }
+
+    .comment_element {
+        margin-top:10px
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+      <div class="card mb-3">
+        <div class="row no-gutters">
+          <div class="col-md-6">
+            {% if listing.image %}
+            <img src="{{ listing.image }}" class="card-img" alt="Item image" style="max-height:500px; max-width:500px; float:left;object-fit: contain;">
+            {% else %}
+            <img src="static/auctions/logo.jpg" class="card-img" alt="Auction logo." style="max-height:500px; max-width:500px; float:left">
+            {% endif %}
+          </div>
+          <div class="col-md-6">
+            <div class="card-body">
+                <h3 class="card-title">Listing: {{ listing.item_name }} 
+                    {% if user.is_authenticated and watchlist == "True" %}
+                    <span class="btn btn-secondary" style="color:white; float:right">
+                        Watchlist
+                    </span>
+                    {% endif %}
+                </h3>
+                
+                <h5 class="card-title">${{ listing.current_price }}</h5>
+                {% if listing.category %}
+                <h5 class="card-title" style="font-style:italic">in {{ category }}</h5>
+                {% endif %}
+                <p class="card-text">{{ listing.description }}</p>
+                {% if user.is_authenticated %}
+                <form action="{% url 'details' listing.id %}" method="POST">
+                    {% csrf_token %}
+                    {% if watchlist == "False" %}
+                    <button class="btn btn-primary" type="submit">Add to Watchlist</button>
+                    <input type="hidden" name="watchlist" value= "False">
+                    {% else %}
+                    <button class="btn btn-primary" type="submit">Remove From Watchlist</button>
+                    <input type="hidden" name="watchlist" value= "True">
+                    {% endif %}
+                </form>
+                {% endif %}
+                
+                <footer style="margin-top:15px"class="card-text"><small class="text-muted">Created {{ listing.date }}</small></footer>
+                <footer class="card-text"><small class="text-muted">by {{ listing.user }}</small></footer>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% if user.is_authenticated %}
+        {% if owner == "True" and winnerMessage == "" %}
+        <form action = "{% url 'close' listing.id %}">
+            <button type="submit" class="btn btn-primary">Close Listing</button>
+        </form>
+        {% elif winnerMessage == "" %}
+        <form action= "{% url 'bid' listing.id %}" method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <input name="bid" type="number" class="form-control" step="0.01" placeholder="Bid">
+                <small class="form-text text-muted">There are {{ bid_number }} bid(s) placed so far.</small>
+            </div>
+            <button type="submit" class="btn btn-primary">Place bid</button>
+        </form>
+        {% else %}
+        <h1>{{ winnerMessage }}</h1>
+        {% endif %}
+    {% endif %}
+    <div id="comment_section">
+        <h4>Comments</h4>
+        {% for comment in comments %}
+        <small class="form-text text-muted">{{ comment.user }} says...</small>
+        <input class="form-control comment_element" type="text" placeholder="{{ comment.comment }}" readonly>
+        {% endfor %}
+        {% if user.is_authenticated %}
+        <div class="form-group">
+            <form action = "{% url 'comment' listing.id %}" method="POST">
+                {% csrf_token %}
+                <textarea class="form-control comment_element" name="comment">Write a comment...</textarea>
+                <button class="comment_element btn btn-primary" type="submit">Comment</button>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+ 
+{% endblock %}
